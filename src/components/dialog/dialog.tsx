@@ -39,7 +39,7 @@ export function PendingDialog() {
           {PENDING}
         </DialogTitle>
         <div className="w-full flex justify-center">
-          <LoaderCircle className="animate-spin" size={64} color="#D3D3D3" />
+          <LoaderCircle className="animate-spin" size={48} color="#D3D3D3" />
         </div>
       </DialogHeader>
     </DialogContent>

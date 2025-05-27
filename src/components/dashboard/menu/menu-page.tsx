@@ -140,7 +140,7 @@ export default function AdminMenuPage() {
             {loading ? (
               <LoaderCircle
                 className="animate-spin"
-                size={64}
+                size={48}
                 color="#D3D3D3"
               />
             ) : (

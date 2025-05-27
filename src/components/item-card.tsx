@@ -9,7 +9,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogTitle,
   DialogTrigger,
   DialogHeader,
@@ -17,53 +16,27 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Dropzone,
-  DropzoneContent,
-  DropzoneEmptyState,
-} from "@/components/dropzone";
-import { useSupabaseUpload } from "@/hooks/use-supabase-upload";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { Plus, Check, X } from "lucide-react";
-import React, { Dispatch, useEffect, useState } from "react";
+import { Plus, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { Label } from "./ui/label";
 import { ScrollArea } from "./ui/scroll-area";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "./ui/alert-dialog";
-import { RenderDialog } from "./dashboard/pos/order-side-pos";
 import { ErrorDialog, PendingDialog, SuccessDialog } from "./dialog/dialog";
-import { error } from "console";
 import { SUCCESS } from "@/constants/constant";
-import { AdminMenuProvider, useAdminMenuContext } from "./dashboard/menu/menu-page";
+import {
+  AdminMenuProvider,
+  useAdminMenuContext,
+} from "./dashboard/menu/menu-page";
 import Addons from "@/interfaces/addons";
 import Menu from "@/interfaces/menu";
 
 import Image from "next/image";
 
-
 interface AddonsTabProps {
   id: number;
   setAddons: React.Dispatch<React.SetStateAction<Addons[]>>;
-  name? : string;
-  price? : number;
+  name?: string;
+  price?: number;
 }
 
 function AddonsTab({ id, setAddons, name, price }: AddonsTabProps) {
@@ -99,7 +72,7 @@ function AddonsTab({ id, setAddons, name, price }: AddonsTabProps) {
       </Button>
       <div className="w-full flex justify-between">
         <Input
-        value={name ?? ''}
+          value={name ?? ""}
           className="w-4/6"
           placeholder="ชื่อ"
           id={`addon-name-${id}`}
@@ -108,7 +81,7 @@ function AddonsTab({ id, setAddons, name, price }: AddonsTabProps) {
         <Input
           className="w-1/6"
           placeholder="ราคา"
-          value={price ?? ''}
+          value={price ?? ""}
           id={`addon-price-${id}`}
           type="number"
           min="0"
@@ -146,18 +119,43 @@ function HandleFormSubmit({
   }
 }
 
-export function ItemCard({type, dialogTrigger, data} : {type : string, dialogTrigger : React.ReactNode, data? : Menu}) {
-  const adminCC = useAdminMenuContext()
-  const {selectableCategories, setLoading, readOrder, setSelectableCategories} = adminCC
-  const [addons, setAddons] = useState<Addons[]>(type == 'edit' && data ? data.addons ?? [] : []);
-  const [menuName, setMenuName] = useState<string>(type == 'edit' && data ? data.name ?? '' : '');
-  const [menuDesc, setMenuDesc] = useState<string>(type == 'edit' && data ? data.description ?? '' : '');
-  const [category, setCategory] = useState<string>(type == 'edit' && data ? data.category ?? '' : '');
-  const [price, setPrice] = useState<number>(type == 'edit' && data ? Number(data.price ?? 0) : 0);
-  const [id, setID] = useState(type == 'edit' && data ? data.id ?? 0 : 0);
+export function ItemCard({
+  type,
+  dialogTrigger,
+  data,
+}: {
+  type: string;
+  dialogTrigger: React.ReactNode;
+  data?: Menu;
+}) {
+  const adminCC = useAdminMenuContext();
+  const {
+    selectableCategories,
+    setLoading,
+    readOrder,
+    setSelectableCategories,
+  } = adminCC;
+  const [addons, setAddons] = useState<Addons[]>(
+    type == "edit" && data ? data.addons ?? [] : []
+  );
+  const [menuName, setMenuName] = useState<string>(
+    type == "edit" && data ? data.name ?? "" : ""
+  );
+  const [menuDesc, setMenuDesc] = useState<string>(
+    type == "edit" && data ? data.description ?? "" : ""
+  );
+  const [category, setCategory] = useState<string>(
+    type == "edit" && data ? data.category ?? "" : ""
+  );
+  const [price, setPrice] = useState<number>(
+    type == "edit" && data ? Number(data.price ?? 0) : 0
+  );
+  const [imageURL, setImageURL] = useState<string>(type == "edit" && data ? data.image ?? "" : ""
+  );
+  const [id, setID] = useState(type == "edit" && data ? data.id ?? 0 : 0);
   const [submissionStatus, setSubmissionStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [editImg, setEditImg] = useState(false)
   async function submitForm() {
     const supabase = createClient();
     let URL = "";
@@ -166,23 +164,25 @@ export function ItemCard({type, dialogTrigger, data} : {type : string, dialogTri
     if (!file) {
       return;
     }
-
+    
     const { data: imageData, error: imageError } = await supabase.storage
       .from("menuimage")
       .upload(menuName, file, {
-        cacheControl: "3600",
-        upsert: false,
+        cacheControl: "360",
+        upsert: true,
       });
-    if (imageError) {
+      if (imageError) {
       setSubmissionStatus("imageError");
       setErrorMessage(imageError.message);
+      console.log(imageError.message)
     } else {
       const { data: publicUrlData } = supabase.storage
         .from("menuimage")
-        .getPublicUrl(menuName);
+        .getPublicUrl(`${menuName}?t=${Date.now()}
+`);
       URL = publicUrlData.publicUrl;
     }
-    const form = {
+    const form = type == 'add' ? {
       category: category,
       name: menuName,
       description: menuDesc,
@@ -190,10 +190,19 @@ export function ItemCard({type, dialogTrigger, data} : {type : string, dialogTri
       image: URL,
       addons: addons,
       is_active: true,
-    };
+    } : type == 'edit' ? {
+      id : data?.id,
+      category: category,
+      name: menuName,
+      description: menuDesc,
+      price: price,
+      image: URL,
+      addons: addons,
+      is_active: true,
+    } : {};
     const { data: formData, error: formError } = await supabase
       .from("menuitems")
-      .insert([form]);
+      .upsert([form]);
     setSubmissionStatus("submitting");
     if (formError) {
       setSubmissionStatus("formError");
@@ -201,38 +210,42 @@ export function ItemCard({type, dialogTrigger, data} : {type : string, dialogTri
     } else {
       setSubmissionStatus("success");
       setLoading(true);
+      setEditImg(false)
+      setImageURL(URL)
       readOrder();
     }
   }
   const setUniqueCategories = async () => {
-      const supabase = createClient();
-  
-      const { data, error } = await supabase
-        .from("menuitems")
-        .select("category", { head: false }); // Select the category column
-  
-      if (error) {
-        console.error("Error fetching unique categories:", error);
-        return []; // Return an empty array or handle the error as needed
-      } else {
-        const uniqueCategories = Array.from(
-          new Set((data ?? []).map((item: { category: string }) => item.category))
-        );
-        setSelectableCategories(uniqueCategories);
-        return uniqueCategories; // Return the unique categories
-      }
-    };
-  useEffect(() => {setUniqueCategories()}, [submissionStatus, errorMessage]);
+    const supabase = createClient();
+
+    const { data, error } = await supabase
+      .from("menuitems")
+      .select("category", { head: false }); // Select the category column
+
+    if (error) {
+      console.error("Error fetching unique categories:", error);
+      return []; // Return an empty array or handle the error as needed
+    } else {
+      const uniqueCategories = Array.from(
+        new Set((data ?? []).map((item: { category: string }) => item.category))
+      );
+      setSelectableCategories(uniqueCategories);
+      return uniqueCategories; // Return the unique categories
+    }
+  };
+  useEffect(() => {
+    setUniqueCategories();
+  }, [submissionStatus, errorMessage, editImg, imageURL]);
   // Example usage
   return (
     <AdminMenuProvider>
       <Dialog>
-        <DialogTrigger asChild>
-          {dialogTrigger}
-        </DialogTrigger>
+        <DialogTrigger asChild>{dialogTrigger}</DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-center">{type == 'edit' ? 'แก้ไขเมนู' : type == 'add' ? 'เพิ่มเมนู' : ""}</DialogTitle>
+            <DialogTitle className="text-center">
+              {type == "edit" ? "แก้ไขเมนู" : type == "add" ? "เพิ่มเมนู" : ""}
+            </DialogTitle>
           </DialogHeader>
           <ScrollArea className="w-full h-[60vh]">
             <div className="w-full flex justify-between items-middle align-middle py-4">
@@ -294,9 +307,30 @@ export function ItemCard({type, dialogTrigger, data} : {type : string, dialogTri
                 }}
               />
             </div>
-            <div className="w-full flex flex-row justify-between py-4">
+            <div className="w-full flex flex-row justify-between py-4 ">
               <p>รูปภาพ</p>
-              {type == 'add' ? <Input id="menu-picture" type="file" className="w-1/2" /> : type == 'edit' && data?.image ? <Image src={data?.image} alt={menuName} width={64} height={64}/>: ""}
+              {type == "add" ||  type == 'edit' && editImg == true ? (
+                <Input id="menu-picture" type="file" className="w-1/2" />
+              )  : type == "edit" && data?.image ? (
+                <div className="w-full h-full flex justify-end space-x-4">
+                  <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-fit h-[4vh] p-4 hover:bg-yellow-500"
+                  onClick={() => {setEditImg(true); }}
+                  >
+                  แก้ไขรูปภาพ
+                  </Button>
+                  <Image
+                  className=""
+                  key={id}
+                  src={imageURL}
+                  alt={menuName}
+                  width={64}
+                  height={64}
+                  />
+                </div>
+              ) : <Input id="menu-picture" type="file" className="w-1/2" />}
             </div>
             <div className="w-full flex flex-col py-4">
               <p>ตัวเลือกเพิ่มเติม</p>
@@ -333,7 +367,11 @@ export function ItemCard({type, dialogTrigger, data} : {type : string, dialogTri
                     submitForm();
                   }}
                 >
-                  {type == 'edit' ? 'แก้ไขเมนู' : type == 'add' ? 'เพิ่มเมนู' : ""}
+                  {type == "edit"
+                    ? "แก้ไขเมนู"
+                    : type == "add"
+                    ? "เพิ่มเมนู"
+                    : ""}
                 </Button>
               </DialogTrigger>
               <HandleFormSubmit

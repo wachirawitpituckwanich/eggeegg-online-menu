@@ -11,7 +11,7 @@ export default function ProdQuantityModifier({ keymap }: { keymap: Menu }) {
   const initQuantity = findItemQuantity(keymap.id);
   const [quantity, setQuantity] = useState(initQuantity);
   const [isUpdated, setIsUpdated] = useState(false);
-  function handleQuantityChange(quantity: number) {
+  const handleQuantityChange = (quantity: number) => {
     setIsUpdated(true);
     setQuantity(quantity);
     if (quantity == initQuantity) {

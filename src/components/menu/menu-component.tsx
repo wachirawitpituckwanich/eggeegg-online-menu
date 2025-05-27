@@ -17,7 +17,7 @@ export default function MenuComponents({
 }) {
   const [loading, setLoading] = useState(true);
   const [menus, setMenus] = useState<Menu[]>(menujson);
-  async function getMenuItems() {
+  const getMenuItems = async () => {
     try {
       setMenus(menujson);
     } catch (error) {

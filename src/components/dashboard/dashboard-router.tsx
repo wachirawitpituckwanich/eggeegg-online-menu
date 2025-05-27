@@ -7,6 +7,7 @@ import DashboardMainpage from "./mainpage/dashboard-main";
 import OrderPage from "./order/order-page";
 import AdminMenuPage, { AdminMenuProvider } from "./menu/menu-page";
 import SettingsPage from "./settings/settings-page";
+import UserPage from "./user/user-page";
 
 export default function DashboardRouter() {
   const ccSidebar = useSidebar()
@@ -20,7 +21,7 @@ export default function DashboardRouter() {
     case '#order':
       return <OrderPage/>
     case '#user':
-      return <div>user</div>
+      return <UserPage/>
     case "#menu":
       return <AdminMenuProvider><AdminMenuPage/></AdminMenuProvider>
     case '#settings':

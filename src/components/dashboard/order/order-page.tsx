@@ -59,11 +59,11 @@ export default function OrderPage() {
             <CardTitle>ออเดอร์</CardTitle>
             <DeleteButton name={"ออเดอร์"} onClick={() => {onDeleteAllClick('order')}} />
           </CardHeader>
-          <CardContent className="px-4 flex justify-center ">
+          <CardContent className="px-4 flex justify-center">
             {loading ? (
               <LoaderCircle
                 className="animate-spin"
-                size={64}
+                size={48}
                 color="#D3D3D3"
               />
             ) : (

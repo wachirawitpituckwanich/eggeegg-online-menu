@@ -25,7 +25,7 @@ export function handleMenuColumns(
       accessorKey: "id",
       header: () => <h1 className="text-center">ไอดี</h1>,
       cell: ({ row }) => {
-        const ID = parseInt(row.getValue("id"));
+        const ID = row.original.id;
         return <p className="truncate text-center">{ID}</p>;
       },
     },
@@ -33,7 +33,7 @@ export function handleMenuColumns(
       accessorKey: "category",
       header: () => <h1 className="text-center">หมวดหมู่</h1>,
       cell: ({ row }) => {
-        const formatted = String(row.getValue("category"));
+        const formatted = row.original.category;
         return <p className="text-center">{formatted}</p>;
       },
     },
@@ -41,7 +41,7 @@ export function handleMenuColumns(
       accessorKey: "name",
       header: () => <h1 className="text-center">ชื่อเมนู</h1>,
       cell: ({ row }) => {
-        const name = String(row.getValue("name"));
+        const name = row.original.name;
         const formatted = name;
         return <p className="truncate text-center">{formatted}</p>;
       },
@@ -50,15 +50,16 @@ export function handleMenuColumns(
       accessorKey: "description",
       header: () => <h1 className="text-center">รายละเอียดเมนู</h1>,
       cell: ({ row }) => {
-        const desc = String(row.getValue("description"));
-        return <p className="truncate text-center w-12 lg:w-24">{desc}</p>;
+        const desc = row.original.description
+        const formatted = !desc ? "-" : desc;
+        return <p className="truncate text-center w-12 lg:w-24">{formatted}</p>;
       },
     },
     {
       accessorKey: "image",
       header: () => <h1 className="text-center">ลิ้งค์รูปภาพ</h1>,
       cell: ({ row }) => {
-        const imgURL = String(row.getValue("image"));
+        const imgURL = row.original.image;
         const formatted = !imgURL ? "-" : imgURL;
         return <p className="text-center w-12 lg:w-24 truncate">{formatted}</p>;
       },
@@ -67,7 +68,7 @@ export function handleMenuColumns(
       accessorKey: "price",
       header: () => <h1 className="text-center">ราคา</h1>,
       cell: ({ row }) => {
-        const price = String(row.getValue("price"));
+        const price = row.original.price;
         return <p className="text-center w-4">{price}</p>;
       },
     },
@@ -75,15 +76,13 @@ export function handleMenuColumns(
       id: "actions",
       cell: ({ row }) => {
         const menu = row.original;
-        const imgURL = String(row.getValue("image"));
-        const formatted = !imgURL ? "-" : imgURL;
         const formData = {
-          id : parseInt(row.getValue("id")),
-          category: String(row.getValue("category")),
-          name: String(row.getValue("name")),
-          description: String(row.getValue("description")),
-          image : formatted,
-          price : Number(row.getValue("price")),
+          id : menu.id,
+          category: menu.category,
+          name: menu.name,
+          description: menu.description,
+          image : menu.image,
+          price : menu.price,
           addons : menu.addons
         }
         return (
@@ -102,7 +101,7 @@ export function handleMenuColumns(
 
               <DeleteDropDownMenuItem
                 onDeleteClick={onDeleteClick}
-                id={row.getValue("id")}
+                id={menu.id}
                 thName={"เมนู"}
                 tableName={"menuitems"}
               />

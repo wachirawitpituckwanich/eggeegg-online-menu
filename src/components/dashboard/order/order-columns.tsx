@@ -2,8 +2,7 @@
 
 import Menu from "@/interfaces/menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
-
+import { MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,18 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { CANCEL, CONFIRM } from "@/constants/constant";
 import { DeleteDropDownMenuItem } from "@/components/datatable-button";
 export type Order = {
   id: number;
@@ -41,18 +28,10 @@ export function handleColumnActions(
 ): ColumnDef<Order>[] {
   return [
     {
-      accessorKey: "id",
-      header: () => <h1 className="text-center">ไอดี</h1>,
-      cell: ({ row }) => {
-        const ID = parseInt(row.getValue("id"));
-        return <p className="truncate text-center">{ID}</p>;
-      },
-    },
-    {
       accessorKey: "created_at",
       header: () => <h1 className="text-center">เวลา</h1>,
       cell: ({ row }) => {
-        const timestamp = row.getValue("created_at");
+        const timestamp = row.original.created_at;
         const date = new Date(
           typeof timestamp === "string" ||
           typeof timestamp === "number" ||
@@ -72,7 +51,7 @@ export function handleColumnActions(
       accessorKey: "employee_id",
       header: () => <h1 className="text-center">รหัสพนักงาน</h1>,
       cell: ({ row }) => {
-        const empID = parseInt(row.getValue("employee_id"));
+        const empID = row.original.employee_id;
         return <p className="truncate text-center">{empID}</p>;
       },
     },
@@ -80,7 +59,7 @@ export function handleColumnActions(
       accessorKey: "table_no",
       header: () => <h1 className="text-center">หมายเลขโต๊ะ</h1>,
       cell: ({ row }) => {
-        const tableNum = parseInt(row.getValue("table_no"));
+        const tableNum = row.original.table_no;
         return <p className="text-center">{tableNum}</p>;
       },
     },
@@ -88,7 +67,7 @@ export function handleColumnActions(
       accessorKey: "details",
       header: () => <h1 className="text-center">ออเดอร์</h1>,
       cell: ({ row }) => {
-        const details: Menu[] = row.getValue("details") as Menu[];
+        const details: Menu[] = row.original.details as Menu[];
         const names = details.map((item) => item.name).join(", ");
         const formatted = names;
         return <p className="truncate text-left w-48 lg:w-60">{formatted}</p>;
@@ -119,7 +98,7 @@ export function handleColumnActions(
               <DropdownMenuItem>แก้ไขรายการ</DropdownMenuItem>
               <DeleteDropDownMenuItem
                 onDeleteClick={onDeleteClick}
-                id={row.getValue('id')}
+                id={order.id}
                 thName={'ออเดอร์'}
                 tableName={'order'}
               />

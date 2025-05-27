@@ -48,7 +48,7 @@ export function OrderItems({ item }: { item: Menu }) {
               <button
                 className="px-4 rounded-full bg-transparent"
                 onClick={() => {
-                  handleQuantityChange(item.quantity - 1);
+                  handleQuantityChange((item.quantity ?? 0)  - 1);
                 }}
               >
                 <Minus color="grey" size={20} />
@@ -65,7 +65,7 @@ export function OrderItems({ item }: { item: Menu }) {
             <button
               className="px-4 rounded-full bg-transparent"
               onClick={() => {
-                handleQuantityChange(item.quantity + 1);
+                handleQuantityChange((item.quantity ?? 0) + 1);
               }}
             >
               <Plus color="grey" size={20} />

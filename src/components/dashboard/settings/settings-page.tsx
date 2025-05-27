@@ -1,8 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DashboardWrapper from "../dashboard-wrapper";
-import { DataTable } from "@/components/data-table";
-import { LoaderCircle } from "lucide-react";
-import { columns } from "../order/order-columns";
 import { Separator } from "@/components/ui/separator";
 import {
   InputOTP,
