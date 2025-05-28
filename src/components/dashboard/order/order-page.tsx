@@ -14,6 +14,7 @@ import { LoaderCircle, Trash2 } from "lucide-react";
 import DashboardWrapper from "../dashboard-wrapper";
 import { Button } from "@/components/ui/button";
 import { DeleteButton } from "@/components/datatable-button";
+import { ORDER } from "@/constants/constant";
 export default function OrderPage() {
   const [orderTableData, setOrderTableData] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +30,6 @@ export default function OrderPage() {
     const supabase = createClient();
     const {error, data} = await supabase.from(table).delete().eq("id", id).select();
     if(error){
-      console.log(error.message)
     }
     else {
       setLoading(true)
@@ -40,7 +40,6 @@ export default function OrderPage() {
     const supabase = createClient();
     const {error, data} = await supabase.from(table).delete();
     if(error){
-      console.log(error.message)
     }
     else {
       setLoading(true)
@@ -56,8 +55,8 @@ export default function OrderPage() {
       <div className="w-full h-full px-4">
         <Card>
           <CardHeader>
-            <CardTitle>ออเดอร์</CardTitle>
-            <DeleteButton name={"ออเดอร์"} onClick={() => {onDeleteAllClick('order')}} />
+            <CardTitle>{ORDER}</CardTitle>
+            <DeleteButton name={ORDER} onClick={() => {onDeleteAllClick('order')}} />
           </CardHeader>
           <CardContent className="px-4 flex justify-center">
             {loading ? (

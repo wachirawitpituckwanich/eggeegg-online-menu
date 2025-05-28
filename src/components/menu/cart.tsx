@@ -68,7 +68,6 @@ export default function Cart() {
           <p className="py-2">รวม {totalPrice} ฿</p>
           <Button className="w-full"
             onClick={() => {
-              console.log(`Your orders are ${cc?.cart}`);
             }}
           >
             {ORDER_FOOD}

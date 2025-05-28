@@ -11,7 +11,7 @@ export default async function Dashboard() {
   const { data, error, data: {user} } = await supabase.auth.getUser();
   const session = await auth()
   if (error || !data?.user) {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   const sidebarData = {

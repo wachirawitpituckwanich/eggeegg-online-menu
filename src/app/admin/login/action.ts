@@ -11,7 +11,6 @@ export async function login(formData: FormData) {
   const password = formData.get('password') as string;
 
   if (!email || !password) {
-    console.log('Validation error: Email and password are required');
     redirect('/error');
   }
 
@@ -19,8 +18,6 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    console.log('error', error)
-
     redirect('/error')
   }
 
@@ -41,7 +38,6 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data)
 
   if (error) {
-        console.log('error', error)
 
     redirect('/error')
   }

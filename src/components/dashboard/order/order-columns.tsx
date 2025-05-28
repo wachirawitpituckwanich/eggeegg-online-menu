@@ -2,7 +2,7 @@
 
 import Menu from "@/interfaces/menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DeleteDropDownMenuItem } from "@/components/datatable-button";
+import { EMP_ID, ORDER, SHOW_RECIEPT, TABLE_NUM } from "@/constants/constant";
 export type Order = {
   id: number;
   created_at: Date;
@@ -49,7 +50,7 @@ export function handleColumnActions(
     },
     {
       accessorKey: "employee_id",
-      header: () => <h1 className="text-center">รหัสพนักงาน</h1>,
+      header: () => <h1 className="text-center">{EMP_ID}</h1>,
       cell: ({ row }) => {
         const empID = row.original.employee_id;
         return <p className="truncate text-center">{empID}</p>;
@@ -57,7 +58,7 @@ export function handleColumnActions(
     },
     {
       accessorKey: "table_no",
-      header: () => <h1 className="text-center">หมายเลขโต๊ะ</h1>,
+      header: () => <h1 className="text-center">{TABLE_NUM}</h1>,
       cell: ({ row }) => {
         const tableNum = row.original.table_no;
         return <p className="text-center">{tableNum}</p>;
@@ -65,7 +66,7 @@ export function handleColumnActions(
     },
     {
       accessorKey: "details",
-      header: () => <h1 className="text-center">ออเดอร์</h1>,
+      header: () => <h1 className="text-center">{ORDER}</h1>,
       cell: ({ row }) => {
         const details: Menu[] = row.original.details as Menu[];
         const names = details.map((item) => item.name).join(", ");
@@ -81,7 +82,7 @@ export function handleColumnActions(
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only"></span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -92,14 +93,12 @@ export function handleColumnActions(
                   // Show slip logic here
                 }}
               >
-                แสดงสลิป
+                {SHOW_RECIEPT}
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>แก้ไขรายการ</DropdownMenuItem>
               <DeleteDropDownMenuItem
                 onDeleteClick={onDeleteClick}
                 id={order.id}
-                thName={'ออเดอร์'}
+                thName={ORDER}
                 tableName={'order'}
               />
             </DropdownMenuContent>

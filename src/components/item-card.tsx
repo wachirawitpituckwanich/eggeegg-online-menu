@@ -174,7 +174,6 @@ export function ItemCard({
       if (imageError) {
       setSubmissionStatus("imageError");
       setErrorMessage(imageError.message);
-      console.log(imageError.message)
     } else {
       const { data: publicUrlData } = supabase.storage
         .from("menuimage")

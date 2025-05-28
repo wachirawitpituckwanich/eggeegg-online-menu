@@ -37,7 +37,6 @@ export function NavMain({
   const cc = useSidebar()
   const {activePage ,setActivePage} = cc
   useEffect(() => {
-      console.log(activePage)
     }, [activePage]);
   return (
     <SidebarGroup>

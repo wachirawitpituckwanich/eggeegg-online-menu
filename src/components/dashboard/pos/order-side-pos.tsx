@@ -18,14 +18,14 @@ import {
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import { useEffect, useState } from "react";
-import Menu from "@/interfaces/menu";
 import { Plus, Minus, Trash2 } from "lucide-react";
 import { Separator } from "../../ui/separator";
 import { ErrorDialog, PendingDialog, SuccessDialog } from "../../dialog/dialog";
 import { Dialog, DialogTrigger } from "../../ui/dialog";
 import { createClient } from "@/utils/supabase/client";
+import Order from "@/interfaces/order";
 
-export function OrderItems({ item }: { item: Menu }) {
+export function OrderItems({ item }: { item: Order }) {
   const cc = useCartContext();
   const { findItemQuantity, setItemQuantity, removeFromCart } = cc;
   const initQuantity = findItemQuantity(item.id);
@@ -42,7 +42,13 @@ export function OrderItems({ item }: { item: Menu }) {
     <>
       <div className="flex justify-center rounded-b-xl bg-white">
         <div className="flex flex-row items-center justify-between py-2 w-full">
-          <p>{item.name}</p>
+          <div className="">
+            <p className="font-bold">{item.name}</p>
+            {item.addons?.map((addon) => (
+              <p className="text-sm text-gray-700" key={addon.name}>{addon.name}</p>
+            ))}
+            <p className="text-sm text-gray-700">{item.extra_request}</p>
+          </div>
           <div className="flex items-center justify-evenly">
             {item.quantity !== 0 ? (
               <button

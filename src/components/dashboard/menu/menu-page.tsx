@@ -17,6 +17,7 @@ import { DeleteButton } from "@/components/datatable-button";
 import { ItemCard } from "@/components/item-card";
 import { createContext, useContext } from "react";
 import { Button } from "@/components/ui/button";
+import { MENU } from "@/constants/constant";
 interface AdminMenuContextType {
   orderTableData: Menu[];
   setOrderTableData: React.Dispatch<React.SetStateAction<Menu[]>>;
@@ -94,7 +95,6 @@ export default function AdminMenuPage() {
       .eq("id", id)
       .select();
     if (error) {
-      console.log(error.message);
     } else {
       setLoading(true);
       readOrder();
@@ -104,7 +104,6 @@ export default function AdminMenuPage() {
     const supabase = createClient();
     const { error, data } = await supabase.from(table).delete();
     if (error) {
-      console.log(error.message);
     } else {
       setLoading(true);
       readOrder();
@@ -133,7 +132,7 @@ export default function AdminMenuPage() {
                   </Button>
                 }
               />
-              <DeleteButton name={"เมนู"} onClick={() => {}} />
+              <DeleteButton name={MENU} onClick={() => {}} />
             </div>
           </CardHeader>
           <CardContent className="px-4 flex justify-center">

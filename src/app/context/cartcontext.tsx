@@ -1,10 +1,9 @@
 "use client";
 import React, { createContext, useState, ReactNode } from "react";
 import Menu from "@/interfaces/menu";
+import Order from "@/interfaces/order";
 
-type CartItem = Menu & {
-  quantity: number;
-};
+type CartItem = Order
 
 type CartContextType = {
   cart: CartItem[];
@@ -27,20 +26,22 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
   const totalPrice = parseFloat(
     cart
-      .reduce((total, item) => total + item.price * item.quantity, 0)
+      .reduce((total, item) => {
+        const addonsTotal = item.addons
+          ? item.addons.reduce((addonSum, addon) => addonSum + (addon.price || 0), 0)
+          : 0;
+        return total + (item.price * item.quantity) + addonsTotal;
+      }, 0)
       .toFixed(2)
   );
 
-  // Add item to cart
   const addToCart = (Menu: Menu | CartItem) => {
     setCart((prevCart) => {
-      // Check if item already exists in cart
       const existingItemIndex = prevCart.findIndex(
         (item) => item.id === Menu.id
       );
 
       if (existingItemIndex >= 0) {
-        // Item exists, increment quantity
         const updatedCart = [...prevCart];
         updatedCart[existingItemIndex] = {
           ...updatedCart[existingItemIndex],
@@ -48,7 +49,6 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
         };
         return updatedCart;
       } else {
-        // Item doesn't exist, add new item with quantity 1
         return [...prevCart, { ...Menu, quantity: 1 }];
       }
     });
@@ -88,14 +88,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({
 
         if (updatedCart[existingItemIndex].quantity > 1 && clearAll) {
           updatedCart.splice(existingItemIndex, 1);
-          // If more than 1, decrement quantity
         } else if (updatedCart[existingItemIndex].quantity > 1) {
           updatedCart[existingItemIndex] = {
             ...updatedCart[existingItemIndex],
             quantity: updatedCart[existingItemIndex].quantity - 1,
           };
         } else {
-          // If only 1, remove the item
           updatedCart.splice(existingItemIndex, 1);
         }
 

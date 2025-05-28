@@ -16,6 +16,7 @@ import {
 import { DeleteDropDownMenuItem } from "@/components/datatable-button";
 import { ItemCard } from "@/components/item-card";
 import { AdminMenuProvider, useAdminMenuContext } from "./menu-page";
+import { MENU } from "@/constants/constant";
 
 export function handleMenuColumns(
   onDeleteClick: (id: number | string, table: string) => void
@@ -102,7 +103,7 @@ export function handleMenuColumns(
               <DeleteDropDownMenuItem
                 onDeleteClick={onDeleteClick}
                 id={menu.id}
-                thName={"เมนู"}
+                thName={MENU}
                 tableName={"menuitems"}
               />
             </DropdownMenuContent>

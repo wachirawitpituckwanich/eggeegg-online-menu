@@ -3,60 +3,130 @@ import ProdQuantityModifier from "./menu/product-quantity-modifier";
 import Menu from "@/interfaces/menu";
 import { useCartContext } from "@/hooks/useCartContext";
 import { useEffect, useState } from "react";
-import { toast } from 'sonner';
-import { CLOSE, ERROR, ITEM_ALREADY_EXISTED } from "@/constants/constant";
+import { toast } from "sonner";
+import {
+  CLOSE,
+  ERROR,
+  ITEM_ALREADY_EXISTED,
+  NOTE_TO_RESTAURANT,
+  ORDER_FOOD,
+} from "@/constants/constant";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Checkbox } from "./ui/checkbox";
+import { Textarea } from "./ui/textarea";
+import Addons from "@/interfaces/addons";
 
 export default function CardButton({ keymap }: { keymap: Menu }) {
   const cc = useCartContext();
   const { addToCart, setItemQuantity, findItemQuantity } = cc;
   const initQuantity = findItemQuantity(keymap.id);
-  const [quantity, setQuantity] = useState(initQuantity);
-  function handleQuantityChange(quantity: number) {
-    setQuantity(quantity);
-  }
+  const [quantity, setQuantity] = useState<number>(initQuantity);
+  const [addons, setAddons] = useState<Addons[]>([])
+  const [extraRequest, setExtraRequest] = useState<string>("");
   useEffect(() => {}, [quantity]);
 
   return (
     <div className="h-[20vh] w-full flex flex-col justify-evenly pb-2 shadow-2xl">
-      <Button
-        className="w-full h-full bg-white border"
-        variant={"secondary"}
-        onClick={() => {
-          console.log("He");
-          if (initQuantity > 0) {
-            toast.error(ERROR, {
-              classNames: {
-                error: 'bg-red-400',
-                toast: "bg-blue-400",
-                title: "text-green-400 text-2xl",
-                description: "text-red-400",
-                actionButton: "bg-zinc-400",
-                cancelButton: "bg-orange-400",
-                closeButton: "bg-lime-400",
-              },
-              description: ITEM_ALREADY_EXISTED,
-              action: {
-                label: CLOSE,
-                onClick: () => console.log("Undo"),
-              },
-            });
-          } else if (initQuantity == 0) {
-            addToCart({
-              category: keymap.category,
-              description: keymap.description,
-              id: keymap.id,
-              image: keymap.image,
-              name: keymap.name,
-              price: keymap.price,
-              quantity: quantity,
-            });
-          } else {
-            setItemQuantity(keymap.id, quantity);
-          }
-        }}
-      >
-        {keymap.name}
-      </Button>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            className="w-full h-full bg-white border"
+            variant={"secondary"}
+          >
+            {keymap.name}
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{keymap.name}</DialogTitle>
+          </DialogHeader>
+          {keymap.addons
+            ? keymap.addons.map((item) => (
+                <div className="flex align-middle space-x-4" key={item.id}>
+                  <Checkbox
+                    className="text-primary"
+                    key={item.id}
+                    id={`addon-checkbox-${item.id}`}
+                    checked={addons.some((addon) => addon.id === item.id)}
+                    onCheckedChange={(checked) => {
+                      setAddons((prevAddons) => {
+                        if (checked) {
+                          if (!prevAddons.some((addon) => addon.id === item.id)) {
+                            return [...prevAddons, item];
+                          }
+                          return prevAddons;
+                        } else {
+                          return prevAddons.filter((addon) => addon.id !== item.id);
+                        }
+                      });
+                    }}
+                  />
+                  <label
+                    htmlFor={`addon-checkbox-${item.id}`}
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {item.name}
+                  </label>
+                </div>
+              ))
+            : null}
+          <label>{NOTE_TO_RESTAURANT}</label>
+          <Textarea
+            placeholder={NOTE_TO_RESTAURANT}
+            className="resize-none mt-2"
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+              setExtraRequest(e.target.value);
+            }}
+          />
+          <DialogFooter>
+            <Button
+              className="w-full h-full border"
+              onClick={() => {
+                if (initQuantity > 0) {
+                  toast.error(ERROR, {
+                    classNames: {
+                      error: "bg-red-400",
+                      toast: "bg-blue-400",
+                      title: "text-green-400 text-2xl",
+                      description: "text-red-400",
+                      actionButton: "bg-zinc-400",
+                      cancelButton: "bg-orange-400",
+                      closeButton: "bg-lime-400",
+                    },
+                    description: ITEM_ALREADY_EXISTED,
+                    action: {
+                      label: CLOSE,
+                      onClick: () => {},
+                    },
+                  });
+                } else if (initQuantity == 0) {
+                    
+                    addToCart({
+                    quantity: quantity,
+                    id: keymap.id,
+                    name: keymap.name,
+                    price: keymap.price,
+                    extra_request: extraRequest,
+                    addons: addons,
+                    });
+                } else {
+                  setItemQuantity(keymap.id, quantity);
+                }
+              }}
+            >
+              {ORDER_FOOD}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
