@@ -1,12 +1,5 @@
 "use client";
 
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -17,31 +10,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import {
+  ColumnDef,
+  flexRender,
+} from "@tanstack/react-table";
+import type { Table as TanstackTable } from "@tanstack/react-table";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+    table: TanstackTable<TData>;
+ 
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  table
 }: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    autoResetPageIndex: false,
-    initialState: {
-      sorting: [
-        {
-          id: "id",
-          desc: true,
-        },
-      ],
-    },
-  });
 
   return (
     <div className="rounded-md border bg-white w-full">
@@ -81,7 +66,11 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                <div className="flex w-full items-center justify-center text-gray-500">
+                  <ChevronLeft className="w-5 h-5 mr-2 text-gray-500" />
+                  <span className="text-lg font-medium text-gray-500">ไม่พบข้อมูล</span>
+                  <ChevronRight className="w-5 h-5 ml-2 text-gray-500" />
+                </div>
               </TableCell>
             </TableRow>
           )}

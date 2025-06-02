@@ -31,16 +31,30 @@ export const LOADING = 'กำลังโหลด...';
 // ================== Order ==================
 export const ORDER_LIST = 'รายการที่สั่ง';
 export const SEARCH_PLACEHOLDER = 'ค้นหารายการอาหาร';
-export const SHOW_RECIEPT = 'แสดงสลิป'
+export const SHOW_RECIEPT = 'แสดงสลิป';
+export const SEARCH_ORDER = 'ค้นหาออเดอร์';
 
-// ================== Scroll Menu ==================
+// ================== Menu ==================
 export const MENU_NOT_FOUND = 'ไม่พบรายการที่คุณต้องการ';
 export const MENU = 'เมนู';
+export const ADD_MENU = 'เพิ่มเมนู'
+export const EDIT_MENU = 'แก้ไขเมนู'
+export const SEARCH_MENU = 'ค้นหาเมนู'
 
 // ================== Table ==================
 export const TABLE_NUM = 'หมายเลขโต๊ะ';
 export const INPUT_TABLE_NUM = 'กรุณาใส่หมายเลขโต๊ะ';
 export const TABLE_NUM_NOT_FOUND = 'ไม่พบหมายเลขโต๊ะ กรุณาใส่หมายเลขโต๊ะ';
+
+// ================== User ==================
+export const USER = 'ผู้ใช้งาน'
+export const CREATE_USER = 'เพิ่มผู้ใช้งาน'
+export const SEARCH_USER = 'ค้นหาผู้ใช้งาน'
+export const EDIT_USER = 'แก้ไขผู้ใช้งาน'
+export const DELETE_USER = 'ลบผู้ใช้งาน'
+export const EMAIL = 'อีเมล'
+export const IMAGE = 'รูปภาพ'
+export const ROLE = 'ตำแหน่ง'
 
 // ================== Page Not Found ==================
 export const PAGE_NOT_FOUND = 'ไม่พบหน้าที่คุณต้องการ';
@@ -54,3 +68,8 @@ export const ORDER = 'ออเดอร์';
 
 // ================== Employee / User ==================
 export const EMP_ID = 'รหัสพนักงาน'
+
+// ================== Auth ==================
+export const LOGIN = 'เข้าสู่ระบบ'
+export const LOGOUT = 'ออกจากระบบ'
+

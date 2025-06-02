@@ -39,8 +39,18 @@ interface AddonsTabProps {
   price?: number;
 }
 
+interface MenuAddForm {
+      category: string,
+      name: string,
+      description: string,
+      price: number | string,
+      image: string,
+      addons: Addons[],
+      is_active: boolean,
+}
+
+type MenuEditForm = MenuAddForm & { id: string | number};
 function AddonsTab({ id, setAddons, name, price }: AddonsTabProps) {
-  // Handlers to update the specific addon in the addons array
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setAddons((prev: Addons[]) =>
@@ -132,7 +142,7 @@ export function ItemCard({
   const {
     selectableCategories,
     setLoading,
-    readOrder,
+    readMenu,
     setSelectableCategories,
   } = adminCC;
   const [addons, setAddons] = useState<Addons[]>(
@@ -161,14 +171,11 @@ export function ItemCard({
     let URL = "";
     const file = (document?.getElementById("menu-picture") as HTMLInputElement)
       ?.files?.[0];
-    if (!file) {
-      return;
-    }
-    
-    const { data: imageData, error: imageError } = await supabase.storage
+    if (file) {
+      const { data: imageData, error: imageError } = await supabase.storage
       .from("menuimage")
       .upload(menuName, file, {
-        cacheControl: "360",
+        cacheControl: "3600",
         upsert: true,
       });
       if (imageError) {
@@ -181,6 +188,8 @@ export function ItemCard({
 `);
       URL = publicUrlData.publicUrl;
     }
+    }
+    
     const form = type == 'add' ? {
       category: category,
       name: menuName,
@@ -189,8 +198,8 @@ export function ItemCard({
       image: URL,
       addons: addons,
       is_active: true,
-    } : type == 'edit' ? {
-      id : data?.id,
+    } as MenuAddForm : type == 'edit' ? {
+      id: data?.id,
       category: category,
       name: menuName,
       description: menuDesc,
@@ -198,7 +207,7 @@ export function ItemCard({
       image: URL,
       addons: addons,
       is_active: true,
-    } : {};
+    } as MenuEditForm : {} as MenuAddForm ;
     const { data: formData, error: formError } = await supabase
       .from("menuitems")
       .upsert([form]);
@@ -211,7 +220,7 @@ export function ItemCard({
       setLoading(true);
       setEditImg(false)
       setImageURL(URL)
-      readOrder();
+      readMenu();
     }
   }
   const setUniqueCategories = async () => {
@@ -219,23 +228,22 @@ export function ItemCard({
 
     const { data, error } = await supabase
       .from("menuitems")
-      .select("category", { head: false }); // Select the category column
+      .select("category", { head: false }); 
 
     if (error) {
       console.error("Error fetching unique categories:", error);
-      return []; // Return an empty array or handle the error as needed
+      return []; 
     } else {
       const uniqueCategories = Array.from(
         new Set((data ?? []).map((item: { category: string }) => item.category))
       );
       setSelectableCategories(uniqueCategories);
-      return uniqueCategories; // Return the unique categories
+      return uniqueCategories; 
     }
   };
   useEffect(() => {
     setUniqueCategories();
-  }, [submissionStatus, errorMessage, editImg, imageURL]);
-  // Example usage
+  }, []);
   return (
     <AdminMenuProvider>
       <Dialog>

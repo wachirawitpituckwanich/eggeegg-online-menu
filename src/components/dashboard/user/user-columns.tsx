@@ -13,75 +13,70 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DeleteDropDownMenuItem } from "@/components/datatable-button";
-import { EMP_ID, ORDER, SHOW_RECIEPT, TABLE_NUM } from "@/constants/constant";
-import { useAdminOrderContext } from "./order-page";
+import { EDIT_USER, EMAIL, EMP_ID, IMAGE, ORDER, ROLE, SHOW_RECIEPT, TABLE_NUM, USER } from "@/constants/constant";
+import { useAdminUserContext } from "./user-page";
 import { createClient } from "@/utils/supabase/client";
+import { Badge } from "@/components/ui/badge"
 
-export type Order = {
+export type User = {
   id: number;
-  created_at: Date;
-  employee_id: number;
-  table_no: number;
-  details: Menu[];
+  name: string;
+  email: string;
+  emailVerified: Date | null;
+  image: string;
+  role: string;
+  emp_id: number;
 };
 
 
 
-export const columns: ColumnDef<Order>[] = [
+export const columns: ColumnDef<User>[] = [
     {
-      accessorKey: "created_at",
-      header: () => <h1 className="text-center">เวลา</h1>,
-      cell: ({ row }) => {
-        const timestamp = row.original.created_at;
-        const date = new Date(
-          typeof timestamp === "string" ||
-          typeof timestamp === "number" ||
-          timestamp instanceof Date
-            ? timestamp
-            : ""
-        );
-        const formatted =
-          new Date(date.getTime() + 7 * 60 * 60 * 1000)
-            .toISOString()
-            .replace("T", " ")
-            .substring(0, 19) + " GMT+7";
-        return <div className="font-medium">{formatted}</div>;
-      },
-    },
-    {
-      accessorKey: "employee_id",
+      accessorKey: "emp_id",
       header: () => <h1 className="text-center">{EMP_ID}</h1>,
       cell: ({ row }) => {
-        const empID = row.original.employee_id;
+        const empID = row.original.emp_id;
         return <p className="truncate text-center">{empID}</p>;
       },
-    },
-    {
-      accessorKey: "table_no",
-      header: () => <h1 className="text-center">{TABLE_NUM}</h1>,
+    },{
+      accessorKey: "name",
+      header: () => <h1 className="text-center">{USER}</h1>,
       cell: ({ row }) => {
-        const tableNum = row.original.table_no;
-        return <p className="text-center">{tableNum}</p>;
+        const name = row.original.name 
+        return <p className="text-center">{name}</p>;
       },
     },
     {
-      accessorKey: "details",
-      header: () => <h1 className="text-center">{ORDER}</h1>,
+      accessorKey: "email",
+      header: () => <h1 className="text-center">{EMAIL}</h1>,
       cell: ({ row }) => {
-        const details: Menu[] = row.original.details as Menu[];
-        const names = details.map((item) => item.name).join(", ");
-        const formatted = names;
-        return <p className="truncate text-left w-48 lg:w-60">{formatted}</p>;
+        const email = row.original.email;
+        return <p className="text-center">{email}</p>;
+      },
+    },{
+      accessorKey: "image",
+      header: () => <h1 className="text-center">{IMAGE}</h1>,
+      cell: ({ row }) => {
+        const imgURL = row.original.image;
+        const formatted = !imgURL ? "-" : imgURL;
+        return <p className="text-center">{formatted}</p>;
+      },
+    },{
+      accessorKey: "role",
+      header: () => <h1 className="text-center">{ROLE}</h1>,
+      cell: ({ row }) => {
+        const role = row.original.role;
+        return <Badge className="text-center">{role}</Badge>;
       },
     },
+    
     {
       id: "actions",
       cell: ({ row }) => {
-        const order = row.original;
-        const adminCC = useAdminOrderContext();
-        const { readOrder, setLoading } = adminCC;
+        const user = row.original;
+        const adminCC = useAdminUserContext();
+        const { readUser, setLoading } = adminCC;
         const onDeleteClick = async (id: number | string, table: string) => {
-                
                 const supabase = createClient();
                 const { error } = await supabase
                   .from(table)
@@ -91,7 +86,7 @@ export const columns: ColumnDef<Order>[] = [
                 if (error) {
                 } else {
                   setLoading(true);
-                  readOrder();
+                  readUser();
                 }
               };
         return (
@@ -109,13 +104,13 @@ export const columns: ColumnDef<Order>[] = [
                   // Show slip logic here
                 }}
               >
-                {SHOW_RECIEPT}
+                {EDIT_USER}
               </DropdownMenuItem>
               <DeleteDropDownMenuItem
                 onDeleteClick={onDeleteClick}
-                id={order.id}
-                thName={ORDER}
-                tableName={'order'}
+                id={user.id}
+                thName={USER}
+                tableName={'next_auth'}
               />
             </DropdownMenuContent>
           </DropdownMenu>

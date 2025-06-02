@@ -1,5 +1,5 @@
 import { MouseEvent, useEffect, useState } from "react";
-import { handleMenuColumns } from "./menu-columns";
+import { columns } from "./menu-columns";
 import { DataTable } from "@/components/data-table";
 import { createClient } from "@/utils/supabase/client";
 import {
@@ -17,15 +17,33 @@ import { DeleteButton } from "@/components/datatable-button";
 import { ItemCard } from "@/components/item-card";
 import { createContext, useContext } from "react";
 import { Button } from "@/components/ui/button";
-import { MENU } from "@/constants/constant";
+import {
+  ADD_MENU,
+  MENU,
+  SEARCH_MENU,
+  SEARCH_PLACEHOLDER,
+} from "@/constants/constant";
+import { Input } from "@/components/ui/input";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table";
 interface AdminMenuContextType {
-  orderTableData: Menu[];
-  setOrderTableData: React.Dispatch<React.SetStateAction<Menu[]>>;
+  menuTableData: Menu[];
+  setmenuTableData: React.Dispatch<React.SetStateAction<Menu[]>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   selectableCategories: string[];
   setSelectableCategories: React.Dispatch<React.SetStateAction<string[]>>;
-  readOrder: () => void;
+  readMenu: () => void;
 }
 
 const AdminMenuContext = createContext<AdminMenuContextType | undefined>(
@@ -43,33 +61,31 @@ export function useAdminMenuContext() {
 }
 
 export function AdminMenuProvider({ children }: { children: React.ReactNode }) {
-  const [orderTableData, setOrderTableData] = useState<Menu[]>([]);
+  const [menuTableData, setmenuTableData] = useState<Menu[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectableCategories, setSelectableCategories] = useState<string[]>(
     []
   );
-  const supabase = createClient();
-
-  const readOrder = async () => {
+  const readMenu = async () => {
     const supabase = createClient();
 
     const { data, error } = await supabase.from("menuitems").select("*");
     if (data) {
       data.sort((a, b) => a.id - b.id);
     }
-    setOrderTableData(data ?? []);
+    setmenuTableData(data ?? []);
     setLoading(false);
   };
   return (
     <AdminMenuContext.Provider
       value={{
-        orderTableData,
-        setOrderTableData,
+        menuTableData,
+        setmenuTableData,
         loading,
         setLoading,
         selectableCategories,
         setSelectableCategories,
-        readOrder,
+        readMenu,
       }}
     >
       {children}
@@ -77,62 +93,77 @@ export function AdminMenuProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+
 export default function AdminMenuPage() {
+  const [searchTerm, setSearchterm] = useState<string>("");
   const adminCC = useAdminMenuContext();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
   const {
-    orderTableData,
-    readOrder,
+    menuTableData,
+    setmenuTableData,
+    readMenu,
     loading,
     setLoading,
     setSelectableCategories,
   } = adminCC;
   const supabase = createClient();
 
-  const onDeleteClick = async (id: number | string, table: string) => {
-    const { error, data } = await supabase
-      .from(table)
-      .delete()
-      .eq("id", id)
-      .select();
-    if (error) {
-    } else {
-      setLoading(true);
-      readOrder();
-    }
-  };
-  const onDeleteAllClick = async (table: string) => {
-    const supabase = createClient();
-    const { error, data } = await supabase.from(table).delete();
-    if (error) {
-    } else {
-      setLoading(true);
-      readOrder();
-    }
-  };
-  
-
-  // Example usage
+  const table = useReactTable({
+    data: menuTableData,
+    columns: columns,
+    enableColumnFilters: true,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
   useEffect(() => {
-    readOrder();
+    readMenu();
   }, [loading]);
 
   return (
     <DashboardWrapper>
       <div className="w-[70vw] h-full px-4">
         <Card>
-          <CardHeader>
-            <CardTitle>เมนู</CardTitle>
-            <div className="w-full flex justify-end space-x-4 pt-4">
-              <ItemCard
-                type={"add"}
-                dialogTrigger={
-                  <Button className="bg-green-500 text-white">
-                    <Plus color="#FFF" />
-                    เพิ่มเมนู
-                  </Button>
+          <CardHeader className="flex">
+            <CardTitle>{MENU}</CardTitle>
+
+            <div className="w-full flex justify-between space-x-4 pt-4">
+              <Input
+                placeholder={SEARCH_MENU}
+                value={
+                  (table.getColumn("name")?.getFilterValue() as string) ?? ""
                 }
+                onChange={(event) => {
+                  table.getColumn("name")?.setFilterValue(event.target.value);
+                }}
+                className="max-w-sm"
               />
-              <DeleteButton name={MENU} onClick={() => {}} />
+              <div className="flex space-x-4">
+                <ItemCard
+                  type={"add"}
+                  dialogTrigger={
+                    <Button className="bg-green-500 text-white">
+                      <Plus color="#FFF" />
+                      {ADD_MENU}
+                    </Button>
+                  }
+                />
+                <DeleteButton name={MENU} onClick={() => {}} />
+              </div>
             </div>
           </CardHeader>
           <CardContent className="px-4 flex justify-center">
@@ -143,10 +174,7 @@ export default function AdminMenuPage() {
                 color="#D3D3D3"
               />
             ) : (
-              <DataTable
-                columns={handleMenuColumns(onDeleteClick)}
-                data={orderTableData}
-              />
+              <DataTable columns={columns} data={menuTableData} table={table} />
             )}
           </CardContent>
         </Card>

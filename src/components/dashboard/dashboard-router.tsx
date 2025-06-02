@@ -1,34 +1,38 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSidebar } from "../ui/sidebar";
 import POSPage from "./pos/pos-page";
 import DashboardMainpage from "./mainpage/dashboard-main";
-import OrderPage from "./order/order-page";
+import OrderPage, { AdminOrderProvider } from "./order/order-page";
 import AdminMenuPage, { AdminMenuProvider } from "./menu/menu-page";
 import SettingsPage from "./settings/settings-page";
-import UserPage from "./user/user-page";
+import UserPage, { AdminUserProvider } from "./user/user-page";
+import { useRouter } from "next/navigation";
 
-export default function DashboardRouter() {
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
+import { AppSidebarData } from "@/interfaces/sidebar";
+
+export default function DashboardRouter({ data } : {data : AppSidebarData}) {
   const ccSidebar = useSidebar()
   const {activePage} = ccSidebar
   useEffect(() => {
-    
   }, [activePage]);
   switch(activePage){
     case '#pos':
       return <POSPage/>
     case '#order':
-      return <OrderPage/>
+      return <AdminOrderProvider><OrderPage/></AdminOrderProvider>
     case '#user':
-      return <UserPage/>
+      return <AdminUserProvider><UserPage/></AdminUserProvider>
     case "#menu":
       return <AdminMenuProvider><AdminMenuPage/></AdminMenuProvider>
     case '#settings':
       return <SettingsPage/>
     case '#main':
-      return <DashboardMainpage/>
+      return <DashboardMainpage name={data.user.name ?? ''}/>
     default:
-      return <DashboardMainpage/>
+      return <DashboardMainpage name={data.user.name ?? ''}/>
   }
 }

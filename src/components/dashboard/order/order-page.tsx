@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { handleColumnActions, Order } from "./order-columns";
+import { createContext, useContext, useEffect, useState } from "react";
+import { columns, Order } from "./order-columns";
 import { DataTable } from "../../data-table";
 import { createClient } from "@/utils/supabase/client";
 import {
@@ -10,42 +10,127 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table";
 import { LoaderCircle, Trash2 } from "lucide-react";
 import DashboardWrapper from "../dashboard-wrapper";
 import { Button } from "@/components/ui/button";
 import { DeleteButton } from "@/components/datatable-button";
-import { ORDER } from "@/constants/constant";
-export default function OrderPage() {
+import { ORDER, SEARCH_ORDER } from "@/constants/constant";
+import { Input } from "@/components/ui/input";
+interface AdminOrderContextType {
+  orderTableData: Order[];
+  setOrderTableData: React.Dispatch<React.SetStateAction<Order[]>>;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  selectableCategories: string[];
+  setSelectableCategories: React.Dispatch<React.SetStateAction<string[]>>;
+  readOrder: () => void;
+}
+
+const AdminOrderContext = createContext<AdminOrderContextType | undefined>(
+  undefined
+);
+
+export function useAdminOrderContext() {
+  const context = useContext(AdminOrderContext);
+  if (!context) {
+    throw new Error(
+      "useAdminOrderContext must be used within AdminOrderProvider"
+    );
+  }
+  return context;
+}
+
+export function AdminOrderProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [orderTableData, setOrderTableData] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectableCategories, setSelectableCategories] = useState<string[]>(
+    []
+  );
+
   const readOrder = async () => {
     const supabase = createClient();
 
-    const { data, error } = await supabase.from("order").select("*");
-
+    const { data } = await supabase.from("order").select("*");
+    if (data) {
+      data.sort((a, b) => a.id - b.id);
+    }
     setOrderTableData(data ?? []);
     setLoading(false);
   };
-  const onDeleteClick = async (id: number | string, table :string) => {
-    const supabase = createClient();
-    const {error, data} = await supabase.from(table).delete().eq("id", id).select();
-    if(error){
-    }
-    else {
-      setLoading(true)
-      readOrder()
-    }
-  };
+  return (
+    <AdminOrderContext.Provider
+      value={{
+        orderTableData,
+        setOrderTableData,
+        loading,
+        setLoading,
+        selectableCategories,
+        setSelectableCategories,
+        readOrder,
+      }}
+    >
+      {children}
+    </AdminOrderContext.Provider>
+  );
+}
+
+export default function OrderPage() {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const adminCC = useAdminOrderContext();
+  const {
+    orderTableData,
+    readOrder,
+    loading,
+    setLoading,
+  } = adminCC;
+
   const onDeleteAllClick = async (table: string) => {
     const supabase = createClient();
-    const {error, data} = await supabase.from(table).delete();
-    if(error){
+    const { error } = await supabase.from(table).delete();
+    if (error) {
+    } else {
+      setLoading(true);
+      readOrder();
     }
-    else {
-      setLoading(true)
-      readOrder()
-    }
-  }
+  };
+  const table = useReactTable({
+    data: orderTableData,
+    columns: columns,
+    enableColumnFilters: true,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
   useEffect(() => {
     readOrder();
   }, [loading]);
@@ -56,7 +141,27 @@ export default function OrderPage() {
         <Card>
           <CardHeader>
             <CardTitle>{ORDER}</CardTitle>
-            <DeleteButton name={ORDER} onClick={() => {onDeleteAllClick('order')}} />
+            <div className="w-full flex justify-between space-x-4 pt-4">
+              <Input
+                placeholder={SEARCH_ORDER}
+                value={
+                  (table.getColumn("created_at")?.getFilterValue() as string) ??
+                  ""
+                }
+                onChange={(event) => {
+                  table
+                    .getColumn("created_at")
+                    ?.setFilterValue(event.target.value);
+                }}
+                className="max-w-sm"
+              />
+              <DeleteButton
+                name={ORDER}
+                onClick={() => {
+                  onDeleteAllClick("order");
+                }}
+              />
+            </div>
           </CardHeader>
           <CardContent className="px-4 flex justify-center">
             {loading ? (
@@ -67,8 +172,9 @@ export default function OrderPage() {
               />
             ) : (
               <DataTable
-                columns={handleColumnActions(onDeleteClick)}
+                columns={columns}
                 data={orderTableData}
+                table={table}
               />
             )}
           </CardContent>
