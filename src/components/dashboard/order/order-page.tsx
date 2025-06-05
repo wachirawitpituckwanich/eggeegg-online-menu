@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { columns, Order } from "./order-columns";
+import { columns, RecieptOrder } from "./order-columns";
 import { DataTable } from "../../data-table";
 import { createClient } from "@/utils/supabase/client";
 import {
@@ -22,15 +22,15 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { LoaderCircle, Trash2 } from "lucide-react";
+import { LoaderCircle, Search, Trash2 } from "lucide-react";
 import DashboardWrapper from "../dashboard-wrapper";
 import { Button } from "@/components/ui/button";
 import { DeleteButton } from "@/components/datatable-button";
 import { ORDER, SEARCH_ORDER } from "@/constants/constant";
 import { Input } from "@/components/ui/input";
 interface AdminOrderContextType {
-  orderTableData: Order[];
-  setOrderTableData: React.Dispatch<React.SetStateAction<Order[]>>;
+  orderTableData: RecieptOrder[];
+  setOrderTableData: React.Dispatch<React.SetStateAction<RecieptOrder[]>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   selectableCategories: string[];
@@ -57,7 +57,7 @@ export function AdminOrderProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [orderTableData, setOrderTableData] = useState<Order[]>([]);
+  const [orderTableData, setOrderTableData] = useState<RecieptOrder[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectableCategories, setSelectableCategories] = useState<string[]>(
     []
@@ -153,6 +153,7 @@ export default function OrderPage() {
                     .getColumn("created_at")
                     ?.setFilterValue(event.target.value);
                 }}
+                startIcon={Search}
                 className="max-w-sm"
               />
               <DeleteButton

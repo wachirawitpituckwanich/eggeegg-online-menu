@@ -10,7 +10,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { LoaderCircle, Plus } from "lucide-react";
+import { LoaderCircle, Plus, Search } from "lucide-react";
 import Menu from "@/interfaces/menu";
 import DashboardWrapper from "../dashboard-wrapper";
 import { DeleteButton } from "@/components/datatable-button";
@@ -151,6 +151,7 @@ export default function AdminMenuPage() {
                   table.getColumn("name")?.setFilterValue(event.target.value);
                 }}
                 className="max-w-sm"
+                startIcon={Search}
               />
               <div className="flex space-x-4">
                 <ItemCard

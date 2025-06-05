@@ -17,6 +17,7 @@ import { EDIT_USER, EMAIL, EMP_ID, IMAGE, ORDER, ROLE, SHOW_RECIEPT, TABLE_NUM, 
 import { useAdminUserContext } from "./user-page";
 import { createClient } from "@/utils/supabase/client";
 import { Badge } from "@/components/ui/badge"
+import { SwitchThumb } from "@radix-ui/react-switch";
 
 export type User = {
   id: number;
@@ -66,7 +67,13 @@ export const columns: ColumnDef<User>[] = [
       header: () => <h1 className="text-center">{ROLE}</h1>,
       cell: ({ row }) => {
         const role = row.original.role;
-        return <Badge className="text-center">{role}</Badge>;
+        switch(role){
+          case 'admin':
+            return <Badge className="text-center bg-blue-500 hover:bg-blue-400">{role}</Badge>;
+          case 'employee':
+            return <Badge className="text-center bg-orange-500 hover:bg-orange-400">{role}</Badge>;
+        }
+        
       },
     },
     
@@ -101,7 +108,7 @@ export const columns: ColumnDef<User>[] = [
               <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => {
-                  // Show slip logic here
+
                 }}
               >
                 {EDIT_USER}

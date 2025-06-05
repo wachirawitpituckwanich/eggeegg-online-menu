@@ -15,7 +15,7 @@ import CardButton from "../../card-button";
 import { OrderListPOS} from "./order-side-pos";
 import { Card, CardContent } from "../../ui/card";
 import { createClient } from "@/utils/supabase/client";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, Search } from "lucide-react";
 import LoadingScreen from "@/components/loading-screen";
 export default function POSPage() {
   
@@ -47,6 +47,7 @@ export default function POSPage() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setInputValue(e.target.value)
               }
+              startIcon={Search}
             />
           </div>
           <Card className="h-[90vh] overflow-y-scroll">
