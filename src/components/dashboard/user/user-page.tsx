@@ -92,7 +92,8 @@ export function AdminUserProvider({ children }: { children: React.ReactNode }) {
     const { data } = await supabase
       .schema("next_auth")
       .from("users")
-      .select("*");
+      .select("*")
+      .not("email_verified", "is", null);
     if (data) {
       data.sort((a, b) => a.id - b.id);
     }
@@ -115,14 +116,14 @@ export function AdminUserProvider({ children }: { children: React.ReactNode }) {
     </AdminUserContext.Provider>
   );
 }
-
+import { toast } from "sonner"
 export default function UserPage() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const adminCC = useAdminUserContext();
-  const { userTableData, readUser, loading, setLoading } = adminCC;
+  const { userTableData, readUser, loading } = adminCC;
   const supabase = createClient();
   const table = useReactTable({
     data: userTableData,
@@ -143,6 +144,8 @@ export default function UserPage() {
       rowSelection,
     },
   });
+  const [openDialog, setOpenDialog] = useState(false);
+
   useEffect(() => {
     readUser();
   }, []);
@@ -173,30 +176,63 @@ export default function UserPage() {
       username: "",
       password: "",
       role: "",
-      image: null,
+      image: "",
     },
   });
-  const handleSignup = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
+
+  const handleSignup = async (
+    email: string,
+    password: string,
+    username: string,
+    role: string,
+    image: string
+  ) => {
+    const { data: authData, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          name: username,
+          role: role,
+          image: image,
+        },
+      },
     });
 
     if (error) {
-      console.error("[AUTH] Signup error:", error);
-      throw new Error(error.message);
+      toast.error(error.message);
+    }
+    if (authData.user && authData.user.id) {
+      const { data: userRecord, error: dbError } = await supabase
+        .schema("next_auth")
+        .from("users")
+        .insert({
+          id: authData.user.id,
+          name: username,
+          email: email,
+          role: role,
+          image: image,
+          email_verified: null,
+        })
+        .select()
+        .single();
+      toast.success('ส่งอีเมลยืนยันตัวตนแล้ว กรุณาตรวจสอบและยืนยันตัวตนผ่านอีเมล')
+      if (dbError) {
+        toast.error(dbError.message);
+      }
+      setOpenDialog(false)
     }
 
-    if (!data.user?.id) {
-      throw new Error(
-        "Signup successful. Please check your email for confirmation."
-      );
-    }
-
-    return data.user;
+    return authData.user;
   };
   function onSubmit(values: z.infer<typeof formSchema>) {
-    handleSignup(values.email, values.password);
+    handleSignup(
+      values.email,
+      values.password,
+      values.username,
+      values.role,
+      values.image
+    );
   }
   return (
     <DashboardWrapper>
@@ -216,7 +252,7 @@ export default function UserPage() {
                 }}
                 className="max-w-sm"
               />
-              <Dialog>
+              <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                 <DialogTrigger asChild>
                   <Button className="bg-green-500 text-white">
                     <Plus color="#FFF" />
@@ -232,7 +268,7 @@ export default function UserPage() {
                   <Form {...form}>
                     <form
                       onSubmit={form.handleSubmit(onSubmit)}
-                      className="space-y-8"
+                      className="space-y-8" 
                     >
                       <FormField
                         control={form.control}

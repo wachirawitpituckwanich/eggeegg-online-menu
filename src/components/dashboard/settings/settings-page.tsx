@@ -7,6 +7,13 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 export default function SettingsPage() {
@@ -15,35 +22,47 @@ export default function SettingsPage() {
       <div className="w-full h-full px-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-left text-2xl">ตั้งค่า</CardTitle>
+            <CardTitle className="text-left text-2xl">
+              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                ตั้งค่า
+              </h3>
+            </CardTitle>
             <Separator />
           </CardHeader>
-          <CardContent className="px-6 flex flex-col text-left overflow-y-scroll overflow-x-hidden">
-            <h1 className="font-bold">เครื่องพิมพ์</h1>
-            <div className="flex justify-between align-middle items-center">
-              <p>IP ของเครื่องพิมพ์</p>
-              <InputOTP maxLength={8} pattern={REGEXP_ONLY_DIGITS}>
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                </InputOTPGroup>
-                <InputOTPSeparator />
-                <InputOTPGroup>
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-                <InputOTPSeparator />
-                <InputOTPGroup>
-                  <InputOTPSlot index={6} />
-                </InputOTPGroup>
-                <InputOTPSeparator />
-                <InputOTPGroup>
-                  <InputOTPSlot index={7} />
-                </InputOTPGroup>
-              </InputOTP>
-            </div>
+          <CardContent className="px-6 flex flex-col text-left overflow-y-auto">
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1">
+                <AccordionTrigger>
+                  <h4 className="scroll-m-20 text-xl tracking-tight">
+                    เครื่องพิมพ์
+                  </h4>
+                </AccordionTrigger>
+                <AccordionContent className="flex justify-between items-center align-middle">
+                  <h1>IP ของเครื่องพิมพ์</h1>
+                  <InputOTP maxLength={8} pattern={REGEXP_ONLY_DIGITS}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={6} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={7} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
       </div>

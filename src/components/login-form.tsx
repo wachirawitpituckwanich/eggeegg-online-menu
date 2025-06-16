@@ -25,13 +25,12 @@ import {
 import { Input } from '@/components/ui/input'
 import { login } from '@/app/admin/login/action'
 
-// Improved schema with additional validation rules
 const formSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
+  email: z.string().email({ message: 'รูปแบบอีเมลไม่ถูกต้อง' }),
   password: z
     .string()
-    .min(6, { message: 'Password must be at least 6 characters long' })
-    .regex(/[a-zA-Z0-9]/, { message: 'Password must be alphanumeric' }),
+    .min(6, { message: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร' })
+    .regex(/[a-zA-Z0-9]/, { message: 'รหัสผ่านต้องเป็นตัวอักษรหรือตัวเลข' }),
 })
 
 export default function LoginPreview() {
@@ -45,7 +44,6 @@ export default function LoginPreview() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Assuming an async login function
       const formData = new FormData();
       formData.append('email', values.email);
       formData.append('password', values.password);

@@ -31,11 +31,12 @@ export default function CardButton({ keymap }: { keymap: Menu }) {
   const [quantity, setQuantity] = useState<number>(initQuantity);
   const [addons, setAddons] = useState<Addons[]>([])
   const [extraRequest, setExtraRequest] = useState<string>("");
+  const [openDialog, setOpenDialog] = useState(false)
   useEffect(() => {}, [quantity]);
 
   return (
     <div className="h-[20vh] w-full flex flex-col justify-evenly pb-2 shadow-2xl">
-      <Dialog>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogTrigger asChild>
           <Button
             className="w-full h-full bg-white border"
@@ -117,8 +118,10 @@ export default function CardButton({ keymap }: { keymap: Menu }) {
                     extra_request: extraRequest,
                     addons: addons,
                     });
+                    setOpenDialog(false)
                 } else {
                   setItemQuantity(keymap.id, quantity);
+                  setOpenDialog(false)
                 }
               }}
             >

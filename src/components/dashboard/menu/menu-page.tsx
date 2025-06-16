@@ -36,6 +36,8 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
+
+
 interface AdminMenuContextType {
   menuTableData: Menu[];
   setmenuTableData: React.Dispatch<React.SetStateAction<Menu[]>>;
@@ -109,7 +111,6 @@ export default function AdminMenuPage() {
     setLoading,
     setSelectableCategories,
   } = adminCC;
-  const supabase = createClient();
 
   const table = useReactTable({
     data: menuTableData,
@@ -133,7 +134,8 @@ export default function AdminMenuPage() {
   useEffect(() => {
     readMenu();
   }, [loading]);
-
+  
+  
   return (
     <DashboardWrapper>
       <div className="w-[70vw] h-full px-4">

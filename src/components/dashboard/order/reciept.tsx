@@ -24,15 +24,12 @@ const ReceiptComponent: React.FC<ReceiptProps> = ({
   const DottedLine = () => (
     <div className="text-center my-2 font-mono text-xs">{"- ".repeat(20)}</div>
   );
-  // Assume the order has a createdAt field in the given format
   const dt = new Date(createdAt);
-  // Format date as YYYY-MM-DD
   const date = dt.toLocaleDateString("th-TH", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   });
-  // Format time as HH:mm
   const time = dt.toLocaleTimeString("th-TH", {
     hour: "2-digit",
     minute: "2-digit",

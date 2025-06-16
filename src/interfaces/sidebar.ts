@@ -3,5 +3,6 @@ export interface AppSidebarData {
     name: string
     email: string
     avatar: string
+    role: string
   }
 }

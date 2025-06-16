@@ -17,7 +17,6 @@ import { EDIT_USER, EMAIL, EMP_ID, IMAGE, ORDER, ROLE, SHOW_RECIEPT, TABLE_NUM, 
 import { useAdminUserContext } from "./user-page";
 import { createClient } from "@/utils/supabase/client";
 import { Badge } from "@/components/ui/badge"
-import { SwitchThumb } from "@radix-ui/react-switch";
 
 export type User = {
   id: number;

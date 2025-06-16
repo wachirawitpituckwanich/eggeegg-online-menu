@@ -43,7 +43,7 @@ export function OrderItems({ item }: { item: Order }) {
       <div className="flex justify-center rounded-b-xl bg-white">
         <div className="flex flex-row items-center justify-between py-2 w-full">
           <div className="">
-            <p className="font-bold">{item.name}</p>
+            <p className="">{item.name}</p>
             {item.addons?.map((addon) => (
               <p className="text-sm text-gray-700" key={addon.name}>{addon.name}</p>
             ))}
@@ -109,6 +109,7 @@ export function OrderListPOS() {
   const [tableNum, setTableNum] = useState("");
   const [formState, setFormState] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const { clearCart } = cc;
   function validateOrder() {
     if (tableNum == "") {
       setFormState("No TableNum");
@@ -131,6 +132,7 @@ export function OrderListPOS() {
       setSubmitError(error.message)
     } else {
       setFormState('Success')
+      clearCart()
     }
   };
   

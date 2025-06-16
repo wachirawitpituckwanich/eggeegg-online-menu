@@ -8,9 +8,31 @@ import {
 } from "@/components/ui/card";
 import { TODAY_SALE, TODAY_ORDER_NUM } from "@/constants/constant";
 import { Separator } from "../../ui/separator";
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 export default function DashboardMainpage({name} : {name : string}) {
+  const [todaySales, setTodaySales] = useState(0)
+  const [todayOrderNum, setTodayOrderNum] = useState(0)
   
+  const fetchOrderDetails = async () => {
+      const supabase = createClient();
+      const today = new Date().toISOString().slice(0, 10)
+      const { data: salesData, error : salesError } = await supabase
+          .from("order")
+          .select("price", { count: 'exact' })
+          .gte('created_at', `${today}T00:00:00.000Z`) 
+          .lt('created_at', `${today}T23:59:59.999Z`); 
+      if (salesError) {
+          console.error("Error fetching data:", salesError);
+      } else {
+         setTodayOrderNum(salesData.length)
+         setTodaySales(salesData.reduce((sum, product) => sum + product.price, 0))
+      }
+  }
+  useEffect(() => {
+    fetchOrderDetails();
+  }, []);
   return (
     <div className="bg-secondary w-screen h-screen text-center align-middle flex flex-col justify-center">
       <h1 className="text-6xl">สวัสดี {name ?? ''}!</h1>
@@ -21,7 +43,7 @@ export default function DashboardMainpage({name} : {name : string}) {
             <Separator />
           </CardHeader>
           <CardContent className="text-lg">
-            <p>0</p>
+            <p>{todaySales} ฿</p>
           </CardContent>
         </Card>
         <Card>
@@ -30,7 +52,7 @@ export default function DashboardMainpage({name} : {name : string}) {
             <Separator />
           </CardHeader>
           <CardContent className="text-lg">
-            <p>0</p>
+            <p>{todayOrderNum}</p>
           </CardContent>
         </Card>
       </div>

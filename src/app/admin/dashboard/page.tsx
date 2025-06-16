@@ -21,21 +21,22 @@ export default async function Dashboard() {
   const { data: roleData, error: roleError } = await supabase
     .schema("next_auth")
     .from("users")
-    .select("*")
+    .select("name, email, image, role")
     .eq("email", data.user.email)
     .single();
   const sidebarData: AppSidebarData = {
     user: {
-      name: roleData.name ?? "",
-      email: roleData.email ?? "",
-      avatar: roleData.image,
+      name: roleData?.name ?? "",
+      email: roleData?.email ?? "",
+      avatar: roleData?.image,
+      role: roleData?.role ?? 'employee', 
     },
   };
   return (
     <SidebarProvider>
       <AppSidebar data={sidebarData} />
       <DashboardRouter data={sidebarData} />
-      <Toaster />
+      <Toaster position="top-right"/>
     </SidebarProvider>
   );
 }
