@@ -91,8 +91,8 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => {signOut()}}>
-              <LogOut />
+            <DropdownMenuItem onClick={() => {signOut()}} className="text-red-500 focus:text-red-300">
+              <LogOut className="text-red-500 focus:text-red-300"/>
               {LOGOUT}
             </DropdownMenuItem>
           </DropdownMenuContent>

@@ -148,7 +148,7 @@ export default function UserPage() {
 
   useEffect(() => {
     readUser();
-  }, []);
+  }, [loading]);
   const formSchema = z.object({
     username: z.string().min(2, {
       message: "ชื่อผู้ใช้งานต้องมีมากกว่า 2 ตัวอักษร",

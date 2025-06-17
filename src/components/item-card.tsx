@@ -137,15 +137,6 @@ export function ItemCard({
   const [menuName, setMenuName] = useState<string>(
     type == "edit" && data ? data.name ?? "" : ""
   );
-  const [menuDesc, setMenuDesc] = useState<string>(
-    type == "edit" && data ? data.description ?? "" : ""
-  );
-  const [category, setCategory] = useState<string>(
-    type == "edit" && data ? data.category ?? "" : ""
-  );
-  const [price, setPrice] = useState<number>(
-    type == "edit" && data ? Number(data.price ?? 0) : 0
-  );
   const [imageURL, setImageURL] = useState<string>(
     type == "edit" && data ? data.image ?? "" : ""
   );

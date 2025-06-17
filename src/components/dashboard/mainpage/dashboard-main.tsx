@@ -10,6 +10,7 @@ import { TODAY_SALE, TODAY_ORDER_NUM } from "@/constants/constant";
 import { Separator } from "../../ui/separator";
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 
 export default function DashboardMainpage({name} : {name : string}) {
   const [todaySales, setTodaySales] = useState(0)
@@ -24,7 +25,8 @@ export default function DashboardMainpage({name} : {name : string}) {
           .gte('created_at', `${today}T00:00:00.000Z`) 
           .lt('created_at', `${today}T23:59:59.999Z`); 
       if (salesError) {
-          console.error("Error fetching data:", salesError);
+          toast.error(`Error fetching data: ${salesError.message}`);
+          console.log(salesError)
       } else {
          setTodayOrderNum(salesData.length)
          setTodaySales(salesData.reduce((sum, product) => sum + product.price, 0))

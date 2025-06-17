@@ -33,7 +33,7 @@ export default function SettingsPage() {
             <Accordion type="single" collapsible>
               <AccordionItem value="item-1">
                 <AccordionTrigger>
-                  <h4 className="scroll-m-20 text-xl tracking-tight">
+                  <h4 className="scroll-m-20 text-lg tracking-tight">
                     เครื่องพิมพ์
                   </h4>
                 </AccordionTrigger>

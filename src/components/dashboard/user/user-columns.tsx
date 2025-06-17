@@ -13,10 +13,37 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DeleteDropDownMenuItem } from "@/components/datatable-button";
-import { EDIT_USER, EMAIL, EMP_ID, IMAGE, ORDER, ROLE, SHOW_RECIEPT, TABLE_NUM, USER } from "@/constants/constant";
+import { CREATE_USER, EDIT_USER, EMAIL, EMP_ID, IMAGE, ORDER, ROLE, SHOW_RECIEPT, TABLE_NUM, USER } from "@/constants/constant";
 import { useAdminUserContext } from "./user-page";
 import { createClient } from "@/utils/supabase/client";
 import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  KeyRound,
+  Link,
+  LoaderCircle,
+  Mail,
+  Plus,
+  Search,
+  User2,
+} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+
 
 export type User = {
   id: number;
@@ -27,8 +54,6 @@ export type User = {
   role: string;
   emp_id: number;
 };
-
-
 
 export const columns: ColumnDef<User>[] = [
     {
@@ -105,13 +130,13 @@ export const columns: ColumnDef<User>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-
-                }}
-              >
-                {EDIT_USER}
-              </DropdownMenuItem>
+              <EditUser data={user} setLoading={setLoading} readUser={readUser}>
+                <DropdownMenuItem
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  {EDIT_USER}
+                </DropdownMenuItem>
+              </EditUser>
               <DeleteDropDownMenuItem
                 onDeleteClick={onDeleteClick}
                 id={user.id}
@@ -125,3 +150,156 @@ export const columns: ColumnDef<User>[] = [
     },
   ];
 
+const EditUser = ({children, data, readUser, setLoading} : {children : React.ReactNode, data: User, setLoading : any, readUser : any}) => {
+  
+  const [openDialog, setOpenDialog] = useState(false);
+  const formSchema = z.object({
+      username: z.string().min(2, {
+        message: "ชื่อผู้ใช้งานต้องมีมากกว่า 2 ตัวอักษร",
+      }),
+      email: z
+        .string()
+        .min(1, { message: "กรุณาใส่อีเมล" })
+        .email("อีเมลไม่ถูกค้อง"),
+      role: z
+        .string({
+          required_error: "กรุณาเลือกตำแหน่งของผู้ใช้งาน",
+        })
+        .min(1, {
+          message: "กรุณาเลือกตำแหน่งของผู้ใช้งาน",
+        }),
+      image: z.any().nullable(),
+    });
+  
+    const form = useForm<z.infer<typeof formSchema>>({
+      resolver: zodResolver(formSchema),
+      defaultValues: {
+        username: data.name,
+        email: data.email,
+        role: data.role,
+        image: data.image,
+      },
+    });
+    const handleEditUser = async (data : User, username: string, role : string, image: string) => {
+      const supabase = createClient()
+      const {data : submitData, error: submitError, count} = await supabase.schema('next_auth').from('users').update([{name : username, role : role, image : image}]).eq('id',data.id)
+      console.log(count)
+      console.log(submitError)
+      if(submitError){
+        toast.error('เกิดข้อผิดพลาดขึ้นในระหว่างการดำเนินการ')
+      } else {
+        setLoading(true);
+        readUser()
+        toast.success('แก้ไขข้อมูลสำเร็จ')        
+      }
+    }
+    const onSubmit = (values: z.infer<typeof formSchema>) => {
+    handleEditUser(
+      data,
+      values.username,
+      values.role,
+      values.image
+    );
+  }
+  return <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+                  <DialogTrigger asChild>
+                    {children}
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle className="text-center">
+                        {EDIT_USER}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-8" 
+                      >
+                        <FormField
+                          control={form.control}
+                          name="username"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>ชื่อ</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="ชื่อผู้ใช้งาน"
+                                  startIcon={User2}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>อีเมล</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="อีเมล"
+                                  type="email"
+                                  {...field}
+                                  disabled
+                                  startIcon={Mail}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="role"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>ตำแหน่ง</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="เลือกตำแหน่ง" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="admin">Admin</SelectItem>
+                                  <SelectItem value="employee">
+                                    Employee
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="image"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>รูปภาพ</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="อัพโหลดรูป"
+                                  type="file"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button type="submit" className="w-full">
+                          {EDIT_USER}
+                        </Button>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+}
