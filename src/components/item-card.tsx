@@ -267,7 +267,7 @@ export function ItemCard({
                     : ""}
                 </DialogTitle>
               </DialogHeader>
-              <ScrollArea className="w-full flex flex-col space-y-12">
+              <ScrollArea className="w-full h-[60vh] flex flex-col space-y-12 overflow-y-auto">
                 <FormField
                   control={form.control}
                   name="category"
@@ -380,6 +380,7 @@ export function ItemCard({
                   <div className="py-2">
                     <Button
                       variant="ghost"
+                      type="button"
                       onClick={() => {
                         setID((prev: number) => prev + 1);
                         setAddons([...addons, { name: "", price: 0, id: id }]);

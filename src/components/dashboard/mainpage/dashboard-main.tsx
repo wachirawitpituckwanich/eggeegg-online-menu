@@ -26,7 +26,6 @@ export default function DashboardMainpage({name} : {name : string}) {
           .lt('created_at', `${today}T23:59:59.999Z`); 
       if (salesError) {
           toast.error(`Error fetching data: ${salesError.message}`);
-          console.log(salesError)
       } else {
          setTodayOrderNum(salesData.length)
          setTodaySales(salesData.reduce((sum, product) => sum + product.price, 0))

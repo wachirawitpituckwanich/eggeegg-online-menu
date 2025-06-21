@@ -10,6 +10,7 @@ interface ReceiptProps {
   table: number | string;
   order: Order[];
   createdAt: string | Date;
+  empID: number | string;
 }
 
 const ReceiptComponent: React.FC<ReceiptProps> = ({
@@ -20,6 +21,7 @@ const ReceiptComponent: React.FC<ReceiptProps> = ({
   orderNumber,
   table,
   createdAt,
+  empID
 }) => {
   const DottedLine = () => (
     <div className="text-center my-2 font-mono text-xs">{"- ".repeat(20)}</div>
@@ -75,8 +77,8 @@ const ReceiptComponent: React.FC<ReceiptProps> = ({
             <span>{table}</span>
           </div>
           <div className="flex justify-between">
-            <span>ชื่อพนักงาน:</span>
-            <span>{"test"}</span>
+            <span>รหัสพนักงาน:</span>
+            <span>{empID}</span>
           </div>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1">

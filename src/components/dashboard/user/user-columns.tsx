@@ -183,8 +183,6 @@ const EditUser = ({children, data, readUser, setLoading} : {children : React.Rea
     const handleEditUser = async (data : User, username: string, role : string, image: string) => {
       const supabase = createClient()
       const {data : submitData, error: submitError, count} = await supabase.schema('next_auth').from('users').update([{name : username, role : role, image : image}]).eq('id',data.id)
-      console.log(count)
-      console.log(submitError)
       if(submitError){
         toast.error('เกิดข้อผิดพลาดขึ้นในระหว่างการดำเนินการ')
       } else {

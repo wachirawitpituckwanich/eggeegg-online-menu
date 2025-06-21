@@ -100,7 +100,6 @@ export const columns: ColumnDef<RecieptOrder>[] = [
           readOrder();
         }
       };
-      console.log(order)
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -121,7 +120,7 @@ export const columns: ColumnDef<RecieptOrder>[] = [
                 <DialogHeader>
                   <DialogTitle className="text-center">ออเดอร์หมายเลข {order.id}</DialogTitle>
                 </DialogHeader>
-                <ReceiptComponent order={order.details} orderNumber={order.id} table={order.table_no} createdAt={order.created_at}/>
+                <ReceiptComponent order={order.details} orderNumber={order.id} table={order.table_no} createdAt={order.created_at} empID={order.employee_id}/>
               </DialogContent>
             </Dialog>
 
