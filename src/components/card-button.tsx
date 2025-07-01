@@ -53,28 +53,28 @@ export default function CardButton({ keymap }: { keymap: Menu }) {
             ? keymap.addons.map((item) => (
                 <div className="flex align-middle space-x-4" key={item.id}>
                   <Checkbox
-                    className="text-primary"
-                    key={item.id}
-                    id={`addon-checkbox-${item.id}`}
-                    checked={addons.some((addon) => addon.id === item.id)}
-                    onCheckedChange={(checked) => {
-                      setAddons((prevAddons) => {
-                        if (checked) {
-                          if (!prevAddons.some((addon) => addon.id === item.id)) {
-                            return [...prevAddons, item];
-                          }
-                          return prevAddons;
-                        } else {
-                          return prevAddons.filter((addon) => addon.id !== item.id);
-                        }
-                      });
-                    }}
+                  className="text-primary"
+                  key={item.id}
+                  id={`addon-checkbox-${item.id}`}
+                  checked={addons.some((addon) => Number(addon.id) === Number(item.id))}
+                  onCheckedChange={(checked) => {
+                    setAddons((prevAddons) => {
+                    if (checked) {
+                      if (!prevAddons.some((addon) => Number(addon.id) === Number(item.id))) {
+                      return [...prevAddons, { ...item, id: Number(item.id) }];
+                      }
+                      return prevAddons;
+                    } else {
+                      return prevAddons.filter((addon) => Number(addon.id) !== Number(item.id));
+                    }
+                    });
+                  }}
                   />
                   <label
-                    htmlFor={`addon-checkbox-${item.id}`}
-                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  htmlFor={`addon-checkbox-${item.id}`}
+                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    {item.name}
+                  {item.name}
                   </label>
                 </div>
               ))

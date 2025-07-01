@@ -24,6 +24,7 @@ import { ErrorDialog, PendingDialog, SuccessDialog } from "../../dialog/dialog";
 import { Dialog, DialogTrigger } from "../../ui/dialog";
 import { createClient } from "@/utils/supabase/client";
 import Order from "@/interfaces/order";
+import axios from 'axios'
 
 export function OrderItems({ item }: { item: Order }) {
   const cc = useCartContext();
@@ -123,10 +124,36 @@ export function OrderListPOS() {
   useEffect(() => {}, [formState, tableNum, submitError]);
   
   const submitOrder = async () => {
+    const printerURL = 'http://localhost:3001/printer/print'
     const { data, error } = await supabase
       .from('order')
       .insert([{ employee_id: 1, table_no: tableNum, details: cc.cart, price: cc.totalPrice }])
       .select();
+    // Ensure all price fields in cart items are numbers
+    const cartWithNumberPrices = cc.cart.map(item => ({
+      ...item,
+      price: Number(item.price),
+      addons: item.addons?.map(addon => ({
+      ...addon,
+      price: Number(addon.price)
+      })) ?? []
+    }));
+
+    await axios.post(printerURL, {
+    created_at: new Date().toISOString(),
+    employee_id: 1,
+    table_no: parseInt(tableNum),
+    details: cartWithNumberPrices,
+    price: cc.totalPrice
+  })
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+     console.log(error.response.data);
+     console.log(error.response.status);
+     console.log(error.response.headers);
+  });
     if (error) {
       setFormState('Submit Error')
       setSubmitError(error.message)
