@@ -15,11 +15,19 @@ With this application, you can easily manage orders, , making it simple for your
 
 ## Pages and Their Functions
 
-- **Home (`/`):** Displays the main menu, allowing customers to browse available items.
-- **Admin (`/admin/dashboard`):** Interface for restaurant staff to manage menu items (add, edit, delete).
-- **Orders (`/admin/dashboard/order`):** View, update, and manage customer orders. 
-- **Menu Items (`/admin/dashboard/menuitems`):** Add, edit, or delete menu items. Staff can update item details such as name, description, price, and extra options.
-- **Users (`/admin/dashboard/users`):** Manage user accounts for staff members. Admins can add new users, assign roles, and deactivate or remove users as needed.
+- **Home (`/`):** Displays the main dashboard, including an overview of today’s sales.
+![Mainpage](https://github.com/wachirawitpituckwanich/eggeegg-online-menu/blob/master/images/dashboard-mainpage.png "Mainpage")
+
+- **Users (`/admin#users`):** Manages staff user accounts. Administrators can add new users, assign roles, and deactivate or remove accounts as needed.
+![user-mgmt](https://github.com/wachirawitpituckwanich/eggeegg-online-menu/blob/master/images/dashboard-userpage.png "User Management")
+
+
+- **Orders (`/admin#order`):** Enables viewing, updating, and managing customer orders in real time.
+![order](https://github.com/wachirawitpituckwanich/eggeegg-online-menu/blob/master/images/dashboard-orderpage.png "Order Management") 
+
+- **POS (`/admin#pos`):** A point-of-sale system for placing orders and printing receipts.
+![pos](https://github.com/wachirawitpituckwanich/eggeegg-online-menu/blob/master/images/dashboard-menupage.png "POS") 
+
 
 
 Feel free to explore this project!
