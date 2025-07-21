@@ -124,7 +124,7 @@ export function OrderListPOS() {
   useEffect(() => {}, [formState, tableNum, submitError]);
   
   const submitOrder = async () => {
-    const printerURL = 'http://localhost:3001/printer/print'
+    const printerURL = 'http://192.168.1.105:3001/printer/print'
     const { data, error } = await supabase
       .from('order')
       .insert([{ employee_id: 1, table_no: tableNum, details: cc.cart, price: cc.totalPrice }])
@@ -150,7 +150,7 @@ export function OrderListPOS() {
     console.log(response);
   })
   .catch(function (error) {
-     console.log(error.response.data);
+     console.log(error.response);
      console.log(error.response.status);
      console.log(error.response.headers);
   });

@@ -11,7 +11,7 @@ With this application, you can easily manage orders, , making it simple for your
 - **Supabase:** 
 - **next/font:** 
 - **Tailwind CSS:** 
-- **Nextauth** 
+- **Nest.js** 
 
 ## Pages and Their Functions
 
